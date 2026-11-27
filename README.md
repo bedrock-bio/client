@@ -16,9 +16,7 @@ This repository holds the **client libraries** for Bedrock Bio data:
 - `r/` — R client package ([CRAN](https://cran.r-project.org/package=bedrockbio))
 - `python/` — Python client package ([PyPI](https://pypi.org/project/bedrock-bio/))
 
-The MCP server for LLM clients lives in its own repo,
-[`bedrock-bio-mcp`](https://github.com/bedrock-bio/bedrock-bio-mcp) (hosted at
-`https://mcp.bedrock.bio/mcp`). Both clients read the same `manifest.json` catalog.
+Both clients read the same `manifest.json` catalog.
 
 See [bedrock.bio](https://bedrock.bio) for the dataset catalog, usage, and
 guidance on choosing an access method.

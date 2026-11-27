@@ -9,8 +9,8 @@
 #' library(bedrockbio)
 #' library(dplyr)
 #'
-#' load_table("dbsnp.vcf") |>
-#'   filter(assembly == "GRCh38", chromosome == "22") |>
+#' load_table("dbsnp.variants") |>
+#'   filter(assembly_accession == "GCF_000001405.40", chromosome == "22") |>
 #'   select(rsid, position, ref_allele, alt_allele) |>
 #'   head(5) |>
 #'   collect()

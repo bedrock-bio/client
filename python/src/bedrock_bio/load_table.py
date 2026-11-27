@@ -23,8 +23,8 @@ def load_table(name: str) -> duckdb.DuckDBPyRelation:
     --------
     >>> import bedrock_bio as bb
     >>> df = (
-    ...     bb.load_table("dbsnp.vcf")
-    ...     .filter("assembly = 'GRCh38' AND chromosome = '22'")
+    ...     bb.load_table("dbsnp.variants")
+    ...     .filter("assembly_accession = 'GCF_000001405.40' AND chromosome = '22'")
     ...     .select("rsid, position, ref_allele, alt_allele")
     ...     .limit(5)
     ...     .df()
