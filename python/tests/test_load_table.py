@@ -2,9 +2,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 import duckdb
 import pytest
+from conftest import requires_live_v2_manifest
 
 from bedrock_bio.load_table import load_table
-from conftest import requires_live_v2_manifest
 
 
 class TestLoadTable:

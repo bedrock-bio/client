@@ -1,7 +1,7 @@
 import pytest
+from conftest import local_manifest, requires_live_v2_manifest
 
 from bedrock_bio.list_tables import list_tables
-from conftest import local_manifest, requires_live_v2_manifest
 
 TWO_NS_MANIFEST = {
     "version": 2,

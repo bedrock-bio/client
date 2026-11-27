@@ -1,9 +1,10 @@
-import duckdb
 import json
 import os
 import threading
 import urllib.request
 from dataclasses import dataclass, field
+
+import duckdb
 
 MANIFEST_VERSION = 2
 
@@ -44,10 +45,10 @@ class Config:
                 with urllib.request.urlopen(request, timeout=10) as response:
                     raw = json.loads(response.read())
 
-            except Exception:
+            except (OSError, ValueError) as exc:
                 raise ConnectionError(
                     f"Unable to access manifest URL {self.manifest_url!r}"
-                )
+                ) from exc
 
             version = raw.get("version")
             if version != MANIFEST_VERSION:

@@ -60,7 +60,7 @@ bb.list_tables()
 Describe a table to see its metadata, citation, and columns:
 
 ```python
-bb.describe_table('ukb_ppp.pqtls')
+bb.describe_table("ukb_ppp.pqtls")
 ```
 
 Lazily load a table, filter on partition columns (for fastest reads), select
@@ -68,10 +68,12 @@ columns, and collect into an in-memory data frame:
 
 ```python
 df = (
-    bb.load_table('ukb_ppp.pqtls')
-      .filter("ancestry = 'EUR' AND protein_id = 'A0FGR8' AND panel = 'Inflammation'")
-      .select('chromosome, position, effect_allele, other_allele, beta, neg_log_10_p_value')
-      .df()
+    bb.load_table("ukb_ppp.pqtls")
+    .filter("ancestry = 'EUR' AND protein_id = 'A0FGR8' AND panel = 'Inflammation'")
+    .select(
+        "chromosome, position, effect_allele, other_allele, beta, neg_log_10_p_value"
+    )
+    .df()
 )
 ```
 

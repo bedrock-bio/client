@@ -1,5 +1,6 @@
-from bedrock_bio.list_namespaces import list_namespaces
 from conftest import requires_live_v2_manifest
+
+from bedrock_bio.list_namespaces import list_namespaces
 
 
 class TestListNamespaces:

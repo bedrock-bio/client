@@ -1,8 +1,8 @@
 import duckdb
 import pytest
+from conftest import local_manifest
 
 from bedrock_bio.config import config
-from conftest import local_manifest
 
 
 class TestManifest:
