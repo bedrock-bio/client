@@ -1,3 +1,4 @@
+import re
 from concurrent.futures import ThreadPoolExecutor
 
 import duckdb
@@ -15,13 +16,13 @@ class TestLoadTable:
 
     def test_returns_relation(self):
         requires_live_v2_manifest()
-        assert isinstance(load_table("dbsnp.vcf"), duckdb.DuckDBPyRelation)
+        assert isinstance(load_table("dbsnp.variants"), duckdb.DuckDBPyRelation)
 
     def test_filter_narrows(self):
         requires_live_v2_manifest()
         rel = (
-            load_table("dbsnp.vcf")
-            .filter("assembly = 'GRCh38' AND chromosome = '22'")
+            load_table("dbsnp.variants")
+            .filter("assembly_accession = 'GCF_000001405.40' AND chromosome = '22'")
             .limit(5)
         )
         rows = rel.fetchall()
@@ -32,8 +33,8 @@ class TestLoadTable:
     def test_select_limits_columns(self):
         requires_live_v2_manifest()
         rel = (
-            load_table("dbsnp.vcf")
-            .filter("assembly = 'GRCh38' AND chromosome = '22'")
+            load_table("dbsnp.variants")
+            .filter("assembly_accession = 'GCF_000001405.40' AND chromosome = '22'")
             .select("chromosome", "position")
             .limit(5)
         )
@@ -42,22 +43,25 @@ class TestLoadTable:
     def test_filters_and_projection_push_down_to_scan(self):
         requires_live_v2_manifest()
         plan = (
-            load_table("dbsnp.vcf")
-            .filter("assembly = 'GRCh38' AND chromosome = '22' AND position > 50000000")
+            load_table("dbsnp.variants")
+            .filter(
+                "assembly_accession = 'GCF_000001405.40' AND chromosome = '22' AND position > 50000000"
+            )
             .select("rsid, position")
             .explain()
         )
         assert "ICEBERG_SCAN" in plan
         assert "FILTER" not in plan
-        assert "assembly='GRCh38'" in plan
-        assert "chromosome='22'" in plan
-        assert "position>50000000" in plan
+        # DuckDB 2.0 prints pushed-down filters with spaces around operators; 1.x did not.
+        assert re.search(r"assembly_accession ?= ?'GCF_000001405\.40'", plan)
+        assert re.search(r"chromosome ?= ?'22'", plan)
+        assert re.search(r"position ?> ?50000000", plan)
         assert "ref_allele" not in plan
         assert "alt_allele" not in plan
 
     def test_reads_second_real_table(self):
         requires_live_v2_manifest()
-        rows = load_table("ensembl.taxonomies").limit(3).fetchall()
+        rows = load_table("registry.taxa").limit(3).fetchall()
         assert len(rows) == 3
 
 

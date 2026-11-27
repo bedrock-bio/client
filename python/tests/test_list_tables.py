@@ -23,7 +23,7 @@ class TestListTables:
         result = list_tables()
         assert isinstance(result, list)
         assert all(isinstance(name, str) for name in result)
-        assert "dbsnp.vcf" in result
+        assert "dbsnp.variants" in result
 
     def test_no_namespace_returns_all_tables(self, monkeypatch, tmp_path):
         local_manifest(TWO_NS_MANIFEST, monkeypatch, tmp_path)

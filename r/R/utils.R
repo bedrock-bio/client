@@ -82,7 +82,11 @@ get_connection <- function() {
     return(pkg$conn)
   }
 
-  pkg$conn <- DBI::dbConnect(duckdb::duckdb())
+  # An explicit home silences DuckDB 2.0's storage notice and keeps downloaded
+  # extensions across sessions, in the package's own cache directory rather
+  # than ~/.duckdb (or a temporary directory that re-downloads every session).
+  home <- file.path(tools::R_user_dir("bedrockbio", "cache"), "duckdb")
+  pkg$conn <- DBI::dbConnect(duckdb::duckdb(home = home))
   DBI::dbExecute(pkg$conn, "INSTALL httpfs")
   DBI::dbExecute(pkg$conn, "INSTALL iceberg")
   DBI::dbExecute(pkg$conn, "SET s3_endpoint='bedrock.bio'")
