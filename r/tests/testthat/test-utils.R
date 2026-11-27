@@ -120,6 +120,20 @@ test_that("get_connection uses anonymous vhost settings", {
   expect_equal(DBI::dbGetQuery(conn, sql)$v, "bedrock.bio")
 })
 
+test_that("get_connection is silent and caches extensions in the package", {
+  skip_on_cran()
+  skip_if_offline()
+  clear_state()
+  expect_no_message(conn <- bedrockbio:::get_connection())
+  ext_dir <- DBI::dbGetQuery(
+    conn, "SELECT current_setting('extension_directory') AS v"
+  )$v
+  expect_true(startsWith(
+    normalizePath(ext_dir, mustWork = FALSE),
+    normalizePath(tools::R_user_dir("bedrockbio", "cache"), mustWork = FALSE)
+  ))
+})
+
 test_that("get_connection caches", {
   skip_on_cran()
   skip_if_offline()

@@ -1,7 +1,7 @@
 import pytest
+from conftest import local_manifest, requires_live_v2_manifest
 
 from bedrock_bio.list_tables import list_tables
-from conftest import local_manifest, requires_live_v2_manifest
 
 TWO_NS_MANIFEST = {
     "version": 2,
@@ -23,7 +23,7 @@ class TestListTables:
         result = list_tables()
         assert isinstance(result, list)
         assert all(isinstance(name, str) for name in result)
-        assert "dbsnp.vcf" in result
+        assert "dbsnp.variants" in result
 
     def test_no_namespace_returns_all_tables(self, monkeypatch, tmp_path):
         local_manifest(TWO_NS_MANIFEST, monkeypatch, tmp_path)

@@ -2,8 +2,8 @@ skip_on_cran()
 skip_if_offline()
 
 dbsnp <- function() {
-  load_table("dbsnp.vcf") |>
-    dplyr::filter(assembly == "GRCh38", chromosome == "22")
+  load_table("dbsnp.variants") |>
+    dplyr::filter(assembly_accession == "GCF_000001405.40", chromosome == "22")
 }
 
 test_that("errors on unknown table", {
@@ -13,7 +13,7 @@ test_that("errors on unknown table", {
 
 test_that("returns a lazy tbl", {
   skip_unless_live_v2()
-  expect_s3_class(load_table("dbsnp.vcf"), "tbl_lazy")
+  expect_s3_class(load_table("dbsnp.variants"), "tbl_lazy")
 })
 
 test_that("filter narrows results", {
@@ -34,9 +34,9 @@ test_that("select limits columns", {
 
 test_that("filters and projection are pushed into the scan", {
   skip_unless_live_v2()
-  rel <- load_table("dbsnp.vcf") |>
+  rel <- load_table("dbsnp.variants") |>
     dplyr::filter(
-      assembly == "GRCh38",
+      assembly_accession == "GCF_000001405.40",
       chromosome == "22",
       position > 50000000L
     ) |>
@@ -47,8 +47,10 @@ test_that("filters and projection are pushed into the scan", {
 
   expect_match(plan_text, "ICEBERG_SCAN")
   expect_false(grepl("FILTER", plan_text))
-  expect_match(plan_text, "assembly='GRCh38'")
-  expect_match(plan_text, "chromosome='22'")
+  # DuckDB 2.0 prints pushed-down filters with spaces around operators;
+  # 1.x did not.
+  expect_match(plan_text, "assembly_accession ?= ?'GCF_000001405\\.40'")
+  expect_match(plan_text, "chromosome ?= ?'22'")
   expect_match(plan_text, "50000000")
   expect_false(grepl("ref_allele", plan_text))
   expect_false(grepl("alt_allele", plan_text))
@@ -56,7 +58,7 @@ test_that("filters and projection are pushed into the scan", {
 
 test_that("reads a second real table end to end", {
   skip_unless_live_v2()
-  df <- load_table("ensembl.taxonomies") |>
+  df <- load_table("registry.taxa") |>
     head(3) |>
     dplyr::collect()
   expect_equal(nrow(df), 3L)

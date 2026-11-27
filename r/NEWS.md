@@ -1,3 +1,11 @@
+# bedrockbio 3.0
+
+* **Requires DuckDB 2.0 (breaking).** `duckdb (>= 2.0.0)`.
+* The client's DuckDB connection now stores its extensions in the package's
+  cache directory (`tools::R_user_dir("bedrockbio", "cache")`). This silences
+  DuckDB 2.0's storage notice and avoids re-downloading extensions every
+  session.
+
 # bedrockbio 2.0.0
 
 * Reads are now anonymous over HTTPS — the client no longer fetches

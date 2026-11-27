@@ -1,8 +1,8 @@
 import duckdb
 import pytest
+from conftest import local_manifest
 
 from bedrock_bio.config import config
-from conftest import local_manifest
 
 
 class TestManifest:
@@ -77,10 +77,17 @@ class TestConnection:
         conn = config.get_connection()
         assert isinstance(conn, duckdb.DuckDBPyConnection)
         assert conn.sql("FROM duckdb_secrets()").fetchall() == []
-        endpoint = conn.sql("SELECT current_setting('s3_endpoint')").fetchone()[0]
+        endpoint = conn.sql("SELECT current_setting('s3_endpoint')").fetchall()[0][0]
         assert endpoint == "bedrock.bio"
-        url_style = conn.sql("SELECT current_setting('s3_url_style')").fetchone()[0]
+        url_style = conn.sql("SELECT current_setting('s3_url_style')").fetchall()[0][0]
         assert url_style == "vhost"
+
+    def test_cursors_inherit_s3_settings(self):
+        cursor = config.get_connection().cursor()
+        settings = cursor.sql(
+            "SELECT current_setting('s3_endpoint'), current_setting('s3_url_style')"
+        ).fetchall()[0]
+        assert settings == ("bedrock.bio", "vhost")
 
     def test_caches(self):
         assert config.get_connection() is config.get_connection()

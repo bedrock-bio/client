@@ -77,5 +77,5 @@ def requires_live_v2_manifest():
     """
     try:
         config.get_manifest()
-    except Exception as exc:
+    except (ConnectionError, ValueError) as exc:
         pytest.skip(f"live v2 manifest unavailable: {exc}")

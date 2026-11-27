@@ -25,7 +25,11 @@ unwieldy tables.
 `dplyr` verbs (`filter`, `select`) can be used on the data frame returned by
 `load_table` to push down row filters and column selections to the storage
 backend. Filtering on the partition columns returned by `describe_table`
-gives the fastest reads.
+gives the fastest reads. Data downloaded during a session is cached locally, so
+repeated or refined queries in the same R session are much faster than the
+first. Don't use the package from forked processes (`parallel::mclapply()`,
+`future::multicore`): DuckDB connections can't be shared across a fork. Use
+separate R sessions instead (for example `future::multisession`).
 
 ## Installation
 

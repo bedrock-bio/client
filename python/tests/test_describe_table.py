@@ -1,7 +1,7 @@
 import pytest
+from conftest import local_manifest
 
 from bedrock_bio.describe_table import describe_table
-from conftest import local_manifest
 
 FLAT_MANIFEST = {
     "version": 2,

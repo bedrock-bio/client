@@ -1,5 +1,19 @@
 # Changelog
 
+## bedrock-bio 3.0
+
+* **Requires DuckDB 2.0 (breaking).** `duckdb>=2.0.0`.
+* `load_table()` now runs each relation on its own cursor, so relations can be
+  used from several threads at once and a partly-read result (for example an
+  open Arrow reader) no longer blocks other queries. DuckDB 2.0 rejects both on
+  a single shared connection. Cursors share the session's cache of downloaded
+  data, so repeated queries stay fast.
+* The S3 settings are now set with `SET GLOBAL` so those cursors inherit them.
+* Fixed a race when several threads make their first call at once: the manifest
+  and connection are now built in full under a lock before other threads can
+  see them. Previously a thread could get a partly loaded manifest ("not found
+  in manifest") or a connection that was still being set up.
+
 ## bedrock-bio 2.0.0
 
 * Reads are now anonymous over HTTPS — the client no longer fetches
