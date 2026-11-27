@@ -1,6 +1,6 @@
 Package: bedrockbio
 Title: Open-Access Computational Biology Datasets
-Version: 2.0.0
+Version: 3.0
 Authors@R: 
     person(
       "Liam", "Abbott", , "liam@bedrock.bio", role = c("aut", "cre", "cph")
@@ -23,7 +23,7 @@ Imports:
     DBI,
     dbplyr,
     dplyr,
-    duckdb,
+    duckdb (>= 2.0.0),
     jsonlite
 Suggests:
     testthat (>= 3.0.0),

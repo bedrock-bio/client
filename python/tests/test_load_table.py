@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import duckdb
 import pytest
 
@@ -57,3 +59,34 @@ class TestLoadTable:
         requires_live_v2_manifest()
         rows = load_table("ensembl.taxonomies").limit(3).fetchall()
         assert len(rows) == 3
+
+
+class TestLoadTableConcurrency:
+    """DuckDB 2.0 refuses a second query on a busy connection; each relation
+    must run on its own cursor."""
+
+    WHERE = (
+        "assembly_accession = 'GCF_000001405.40' AND chromosome = '22' "
+        "AND position BETWEEN {lo} AND {hi}"
+    )
+
+    def count(self, i: int) -> int:
+        lo = 20_000_000 + i * 1_000_000
+        where = self.WHERE.format(lo=lo, hi=lo + 100_000)
+        rel = load_table("dbsnp.variants").filter(where).aggregate("count(*)")
+        return rel.fetchall()[0][0]
+
+    def test_query_while_another_result_is_open(self):
+        pytest.importorskip("pyarrow")  # Arrow readers need it
+        requires_live_v2_manifest()
+        where = self.WHERE.format(lo=20_000_000, hi=21_000_000)
+        rel = load_table("dbsnp.variants").filter(where).select("rsid")
+        reader = rel.to_arrow_reader(batch_size=1_000)
+        next(iter(reader))  # leave the first result unfinished
+        assert self.count(1) > 0
+
+    def test_parallel_threads(self):
+        requires_live_v2_manifest()
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            counts = list(pool.map(self.count, range(4)))
+        assert all(n > 0 for n in counts)

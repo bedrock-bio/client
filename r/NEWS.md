@@ -1,3 +1,7 @@
+# bedrockbio 3.0
+
+* **Requires DuckDB 2.0 (breaking).** `duckdb (>= 2.0.0)`.
+
 # bedrockbio 2.0.0
 
 * Reads are now anonymous over HTTPS — the client no longer fetches

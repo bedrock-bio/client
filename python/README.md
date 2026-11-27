@@ -25,7 +25,10 @@ unwieldy tables.
 DuckDB methods (`filter`, `select`, `limit`) can be used on the relation
 returned by `load_table` to push down row filters and column selections to
 the storage backend. Filtering on the partition columns returned by
-`describe_table` gives the fastest reads.
+`describe_table` gives the fastest reads. Data downloaded during a session is
+cached locally, so repeated or refined queries in the same Python session are
+much faster than the first. Relations returned by `load_table` can be used from
+several threads at once.
 
 ## Installation
 
